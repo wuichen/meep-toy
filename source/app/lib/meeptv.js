@@ -11,20 +11,70 @@ import '../assets/preset.css!';
 // }
 
 const meeptv = React.createClass({
-  getInitialState() {
+
+  getDefaultProps() {
     return {
-      state: 0
+      name: 'guanjun',
+      age: '23'
     };
   },
 
+  getInitialState() {
+    console.log(this,'000-componentIsMounting');
+    return {
+      mood: 'ok'
+    }
+  },
+
+  componentWillMount() {
+    console.log(this,'111-componentIsMounting');
+    this.setState({
+      mood: 'all right'
+    })
+  },
+
   render: function() {
+    console.log(this, '222-isNowRendering');
     return (
       <div style={css.meeptv}>
         <Chatroom />
         <Livestream />
       </div>
     );
+  },
+
+  componentDidMount() {
+    console.log(this, '333-hasMounted');
+    this.setState({
+      mood: 'better'
+    })
+  },
+
+  componentWillReceiveProps(nextProps) {
+    console.log(this, '444-isReceivingProps', nextProps);
+    if(this.props.age !== nextProps) {
+      this.setState({
+        age: '24'
+      });
+    }
+  },
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.state.mood !== nextState;
+  },
+
+  componentWillUpdate() {
+
+  },
+
+  componentDidUpdate() {
+
+  },
+
+  componentWillUnmount() {
+
   }
+
 });
 
 const Chatroom = React.createClass({
