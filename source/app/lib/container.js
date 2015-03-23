@@ -58,7 +58,7 @@ const LogoGroup = React.createClass({
           />
         </div>
       </div>
-    )
+    );
   }
 })
 
@@ -72,12 +72,12 @@ const ChatroomBreadcrumb = React.createClass({
           <ChatroomBreadcrumbItem linkname="Products" />
         </ul>
       </div>
-    )
+    );
   }
 });
 
 const ChatroomBreadcrumbItem = React.createClass({
-  render(){
+  render: function(){
     return (
       <li style={css.navListItem } >
         <a href="#" style={css.navListItemLink}>{this.props.linkname}</a>
@@ -106,7 +106,7 @@ const ChatList = React.createClass({
         <ChatListItem name="Guanjun" message="Not bad. What is up bro?" />
         <ChatListItem name="Margot" message="Salut, je suis bien :)" />
       </div>
-    )
+    );
   }
 });
 
@@ -130,7 +130,7 @@ const ChatListItem = React.createClass({
 
         </div>
       </div>
-    )
+    );
   }
 });
 
@@ -239,11 +239,8 @@ const MessageGroupKeyboard = React.createClass({
         <input style={css.messageGroupKeyboardInput } placeholder="look for..." />
         <button style={css.messageGroupKeyboardBtn}>send</button>
       </div>
-    )
+    );
   }
-
 });
 
-
 export default House;
-

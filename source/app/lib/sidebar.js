@@ -89,4 +89,6 @@ const Btn = React.createClass({
   }
 });
 
-export default Sidebar;
+export default {
+  component: Sidebar
+};

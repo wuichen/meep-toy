@@ -10,7 +10,7 @@ import '../assets/preset.css!';
 //   }
 // }
 
-const meeptv = React.createClass({
+const Meeptv = React.createClass({
 
   getDefaultProps() {
     return {
@@ -265,4 +265,7 @@ const ChatroomKeyboardBtn = React.createClass({
 
 
 
-export default meeptv;
+
+export default {
+  component: Meeptv
+};

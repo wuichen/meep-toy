@@ -1,24 +1,17 @@
 import React from 'react';
 import House from './lib/container';
-import Sidebar from './lib/sidebar';
-import Meeptv from './lib/meeptv';
+// import Sidebar from './lib/sidebar';
+// import Meeptv Vfrom './lib/meeptv';
 import RouterStore from 'meepworks/stores/router-store';
 
 
 const App = React.createClass({
   render() {
-    console.log(RouterStore.getInstance().state.get('route'));
-    switch(RouterStore.getInstance().state.get('route')) {
-      case '/':
-        return <House />;
-        break;
-      case '/sidebar':
-        return <Sidebar />;
-        break;
-      case '/meeptv':
-        return <Meeptv />;
-        break;
+    let Children = RouterStore.getChildComponent(App);
+    if(Children) {
+      return <Children />;
     }
+    return <House />;
   }
 });
 
@@ -32,11 +25,13 @@ export default {
     },
     '/sidebar': {
       name: 'sidebar',
-      title: 'Sidebar'
+      title: 'Sidebar',
+      app: './lib/sidebar'
     },
     '/meeptv': {
       name: 'meeptv',
-      title: 'meeptv'
+      title: 'meeptv',
+      app: './lib/meeptv'
     }
   }
 };
