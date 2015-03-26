@@ -7,7 +7,7 @@ body,
 ::-webkit-input-placeholder {
   font-size: 12px;
   color: #999;
-  line-height: 12px;
+  line-height: auto;
 }
 
 /*@keyframes sending {

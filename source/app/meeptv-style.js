@@ -103,9 +103,23 @@ const css = {
     flex: 3,
     display: 'flex'
   },
+  usernameKeyboard: {
+    flex: 3,
+    display: 'flex',
+    flexFlow: 'column'
+  },
+  inputOverlay: {
+    background: 'rgba(0,0,0, 0.8)'
+  },
   chatroomKeyboardInputWrap: {
     display: 'flex',
     flex: 7
+  },
+  usernameKeyboardInputWrap: {
+    display: 'flex',
+    flex: 7,
+    flexFlow: 'column',
+    padding: '6px'
   },
   chatroomKeyboardInput: {
     display: 'flex',
@@ -113,8 +127,21 @@ const css = {
     flex: 1,
     border: 0,
     fontSize: '12px',
-    lineHeight: '12px',
+    lineHeight: '16px',
     padding: '6px'
+  },
+  usernameLabel: {
+    flex: '2',
+    fontSize: '14px',
+    lineHeight: '14px',
+    marginBottom: '8px'
+  },
+  usernameInput: {
+    flex: '2',
+    border: '1px solid rgb(190, 190, 190)',
+    padding: '6px',
+    fontSize: '12px',
+    lineHeight: 'auto'
   },
   chatroomKeyboardBtnWrap: {
     display: 'flex',
@@ -128,7 +155,9 @@ const css = {
     color: '#fff',
     padding: '8px',
     borderRadius: '2px',
-    transition: '0.1s all'
+    transition: '0.1s all',
+    fontSize: '12px',
+    lineHeight: '12px'
   },
   btnHover: {
     background: '#111',

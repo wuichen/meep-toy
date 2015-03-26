@@ -1,6 +1,4 @@
 import React from 'react';
-import 'normalize.css/normalize.css!';
-import 'font-awesome/css/font-awesome.min.css!';
 import css from '../sidebar-style';
 import {merge as m} from 'meepworks/styles';
 

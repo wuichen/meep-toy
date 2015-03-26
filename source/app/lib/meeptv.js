@@ -1,40 +1,15 @@
 import React from 'react';
-import 'normalize.css/normalize.css!';
 import css from '../meeptv-style';
 import {merge as m} from 'meepworks/styles';
 import '../assets/preset.css!';
 
-// export default class MyCom extends React.Component {
-//   render() {
-//     return <div>myCom</div>;
-//   }
-// }
+import SignInAction from '../actions/sign-in-action';
+import ChatStore from '../stores/chat-store';
+import Livestream from '../lib/livestream';
 
 const Meeptv = React.createClass({
 
-  getDefaultProps() {
-    return {
-      name: 'guanjun',
-      age: '23'
-    };
-  },
-
-  getInitialState() {
-    console.log(this,'000-componentIsMounting');
-    return {
-      mood: 'ok'
-    }
-  },
-
-  componentWillMount() {
-    console.log(this,'111-componentIsMounting');
-    this.setState({
-      mood: 'all right'
-    })
-  },
-
   render: function() {
-    console.log(this, '222-isNowRendering');
     return (
       <div style={css.meeptv}>
         <Chatroom />
@@ -43,83 +18,74 @@ const Meeptv = React.createClass({
     );
   },
 
-  componentDidMount() {
-    console.log(this, '333-hasMounted');
-    this.setState({
-      mood: 'better'
-    })
-  },
-
-  componentWillReceiveProps(nextProps) {
-    console.log(this, '444-isReceivingProps', nextProps);
-    if(this.props.age !== nextProps) {
-      this.setState({
-        age: '24'
-      });
-    }
-  },
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.state.mood !== nextState;
-  },
-
-  componentWillUpdate() {
-
-  },
-
-  componentDidUpdate() {
-
-  },
-
-  componentWillUnmount() {
-
-  }
-
 });
 
 const Chatroom = React.createClass({
+
+
+  getInitialState() {
+    return {
+      displayLogIn: false,
+      signedIn: ChatStore.isSignedIn
+    };
+  },
+
+  componentDidMount() {
+    ChatStore.subscribe(this.handleChange);
+  },
+
+  // shouldComponentUpdate(nextProps, nextState) {
+    // if(this.state.signedIn !== nextState.signedIn) {
+    //   return true;
+    // }
+    // if(this.state.signedIn !== nextState.signedIn) {
+    //   return true;
+    // }
+    // return false;
+  // },
+
+  handleKeyboardClick(e) {
+    console.log('111', this.state.signedIn)
+    if(!this.state.signedIn) {
+      console.log('am i in?=========')
+      this.setState({
+        displayLogIn: true
+      });
+    }
+    console.log('1.5----', this.state.signedIn)
+    console.log('222', this.state.displayLogIn)
+  },
+
+  handleChange() {
+    this.setState({
+      signedIn: ChatStore.isSignedIn
+    });
+  },
+
+  componentWillUnmount() {
+    ChatStore.unsubscribe(this.handleChange);
+  },
+
   render: function() {
+    console.log('rendering----', this.state.displayLogIn)
+    console.log('rendering----', this.state.signedIn)
+    console.log('chatroom render function is called');
+
     return (
       <div style={css.chatroom}>
         <ChatroomHeader />
         <ChatroomCaption />
         <ChatroomBody />
-        <ChatroomKeyboard />
+        {
+          (this.state.displayLogIn && !this.state.signedIn) ?
+          <UsernameKeyboard /> :
+          <ChatroomKeyboard onClick={this.handleKeyboardClick} />
+        }
       </div>
     );
+
   }
 });
-
-const Livestream = React.createClass({
-  render: function() {
-    return (
-      <div style={css.livestream}>
-        <LivestreamVideo />
-        <LivestreamNav />
-      </div>
-    );
-  }
-});
-
-const LivestreamVideo = React.createClass({
-  render: function() {
-    return (
-      <div style={css.livestreamVideo}>
-      </div>
-    );
-  }
-});
-
-const LivestreamNav = React.createClass({
-  render: function() {
-    return (
-      <div style={css.livestreamNav}>
-      </div>
-    );
-  }
-});
-
-
 
 const ChatroomHeader = React.createClass({
   render: function() {
@@ -176,8 +142,6 @@ const ChatroomBody = React.createClass({
   }
 });
 
-
-//<div style={css.chatroomBodyMessageAvatar}><img style={css.chatroomBodyMessageAvatarImage} src={this.props.avatarSrc}/></div>
 const ChatroomBodyMessage = React.createClass({
   render: function() {
     return (
@@ -195,57 +159,134 @@ const ChatroomBodyMessage = React.createClass({
 });
 
 const ChatroomKeyboard = React.createClass({
+
+  getInitialState() {
+    return {
+      signedIn: ChatStore.signedIn,
+      username: ChatStore.username
+    };
+  },
+
+  handleClick(e) {
+    console.log('chatroom keyboard area is clicked');
+    if(typeof this.props.onClick === 'function') {
+      this.props.onClick(e);
+    }
+    console.log('chatroom keyboard area code is done');
+  },
+
+  render: function() {
+    return (
+      <div style={css.chatroomKeyboard}
+      onClick={this.handleClick}
+      >
+        <ChatroomKeyboardInput />
+        <ChatroomKeyboardBtn icon="fa fa-envelope-o"/>
+      </div>
+    );
+  }
+});
+
+const UsernameKeyboard = React.createClass({
+
+  getInitialState() {
+    return {
+      signedIn: ChatStore.signedIn,
+      username: ChatStore.username
+    };
+  },
+
+  handleBtnClick(e) {
+    console.log(this.refs.input.getInput());
+
+    new SignInAction(this.refs.input.getInput()).exec();
+  },
+
   render: function() {
     return (
       <div style={css.chatroomKeyboard}>
-        <ChatroomKeyboardInput />
-        <ChatroomKeyboardBtn />
+        <UsernameKeyboardInput ref="input"/>
+        <ChatroomKeyboardBtn onClick={this.handleBtnClick} icon="fa fa-sign-in"/>
+      </div>
+    );
+  }
+});
+
+
+const UsernameKeyboardInput = React.createClass({
+  getInput() {
+    return this.refs.input.getDOMNode().value;
+  },
+  render: function() {
+    return (
+      <div style={css.usernameKeyboardInputWrap}>
+        <div style={css.usernameLabel}>username:</div>
+        <textarea ref="input" style={css.usernameInput} placeholder="Guanjun.."/>
       </div>
     );
   }
 });
 
 const ChatroomKeyboardInput = React.createClass({
+
   render: function() {
     return (
       <div style={css.chatroomKeyboardInputWrap}>
-        <textarea style={css.chatroomKeyboardInput} placeholder="Please sign in to send a message.."/>
+
+        <textarea style={m(css.chatroomKeyboardInput
+        )}
+
+         placeholder="Please sign in to send a message.."/>
       </div>
     );
   }
 });
 
+
+
 const ChatroomKeyboardBtn = React.createClass({
+
   getInitialState() {
     return {
       hover: false,
       pressed: false
     };
   },
+
   handleMouseEnter() {
     this.setState({
       hover: true
     });
   },
+
   handleMouseLeave() {
     this.setState({
       hover: false
     });
   },
+
   handleMouseDown() {
     this.setState({
       pressed: true
     });
   },
+
   handleMouseUp() {
     this.setState({
       pressed: false
     });
   },
+
+  handleClick(e) {
+    if(typeof this.props.onClick === 'function') {
+      this.props.onClick(e);
+    }
+  },
+
   render: function() {
     return (
       <div style={css.chatroomKeyboardBtnWrap}>
-        <div className="sendBtn" style=
+        <div style=
           {m(css.chatroomKeyboardBtn,
             this.state.hover && css.btnHover,
             this.state.hover && this.state.pressed && css.btnPressed
@@ -254,18 +295,18 @@ const ChatroomKeyboardBtn = React.createClass({
           onMouseLeave={this.handleMouseLeave}
           onMouseDown={this.handleMouseDown}
           onMouseUp={this.handleMouseUp}
+          onClick={this.handleClick}
         >
-          <i className="fa fa-envelope-o"></i>
+          <i className={this.props.icon}></i>
         </div>
       </div>
     );
   }
 });
 
-
-
-
-
 export default {
-  component: Meeptv
+  component: Meeptv,
+  stores: [
+    ChatStore
+  ]
 };
