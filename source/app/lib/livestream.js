@@ -48,7 +48,17 @@ class SetupPlayerAction extends ActionBase {
         firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
         window.onYouTubePlayerAPIReady = () => {
-          var newPlayer = new YT.Player('video',{})
+          var newPlayer = new YT.Player('video',{
+            events:{
+              'onStateChange': function(event){
+                if(event.data == 2){
+                  new PauseAction().exec();
+                }else if(event.data == 1){
+                  new PlayAction().exec();
+                }
+              }
+            }
+          })
           resolve(newPlayer);
         };
       }
@@ -62,6 +72,7 @@ export class PlayerStore extends StoreBase {
   constructor(){
     this[DATA] = {
       player: null,
+      isPlaying: false,
       _currentVideo:   {
        "kind": "youtube#searchResult",
        "etag": "\"9iWEWaGPvvCMMVNTPHF9GiusHJA/tfBfZvfvsggFrRXEjOfJRNLvxVI\"",
@@ -267,10 +278,14 @@ export class PlayerStore extends StoreBase {
 
   handlePlay(){
     this[DATA].player.playVideo();
+    this[DATA].isPlaying = true;
+    this.emit('change');
   }
 
   handlePause(){
+    this[DATA].isPlaying = false;
     this[DATA].player.pauseVideo();
+    this.emit('change');
   }
 
   handleVolumeChange(volume) {
@@ -285,6 +300,7 @@ export class PlayerStore extends StoreBase {
   handleNewVideo(video) {
     this[DATA]._currentVideo = video;
     this[DATA].player.loadVideoById(video.id.videoId);    
+    this[DATA].isPlaying = true;
     this.emit('change');
   }
 
@@ -311,6 +327,15 @@ export class PlayerStore extends StoreBase {
 
   get relatedVideos(){
     return this[DATA].relatedVideos;
+    // return this[DATA].currentVideo;
+  }
+
+  static get isPlaying() {
+    return this.getInstance().isPlaying;
+  }
+
+  get isPlaying(){
+    return this[DATA].isPlaying;
     // return this[DATA].currentVideo;
   }
 
@@ -353,38 +378,30 @@ const LivestreamNav = React.createClass({
   getInitialState() {
     return {
       title: null,
-      isPlaying: false,
+      isPlaying: PlayerStore.isPlaying,
       currentVideo: PlayerStore.currentVideo
     };
   },
   componentDidMount() {
-    PlayerStore.subscribe(this.handleTitle);
+    PlayerStore.subscribe(this.handleChange);
     new SetupPlayerAction().exec();
   },
-  handleTitle() {
+  handleChange() {
     this.setState({
-      title: PlayerStore.currentVideo.snippet.title
+      title: PlayerStore.currentVideo.snippet.title,
+      isPlaying: PlayerStore.isPlaying
     });
   },
   clickPlay() {
-    this.setState({
-      isPlaying: true
-    });
     new PlayAction().exec();
   },
   clickPause() {
-    this.setState({
-      isPlaying: false
-    }); 
     new PauseAction().exec();
   },
   changeVolume(e) {
     new VolumeChangeAction(e.target.value).exec();
   },
   clickVideoChange(i) {
-    this.setState({
-      isPlaying: true
-    });
     new ChangeVideoAction(PlayerStore.relatedVideos.items[i]).exec();
   },
   render: function() {  

@@ -93,8 +93,6 @@ io.on('connection', function(socket){
       });
       console.log(userNames.get());
       fn(true);
-      number++;
-      console.log(number);
     } else {
       fn(false);
     }
@@ -111,7 +109,6 @@ io.on('connection', function(socket){
     userNames.free(name);
   });
 });
-var number = 0;
 var userNames = (function () {
   var names = {};
 
