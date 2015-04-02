@@ -234,6 +234,7 @@ const ChatroomKeyboard = React.createClass({
       new SendMessageAction(passingMessage).exec();
     }
   },
+
   render: function() {
     return (
       <div style={css.chatroomKeyboard}
@@ -277,14 +278,38 @@ const UsernameKeyboard = React.createClass({
 
 
 const UsernameKeyboardInput = React.createClass({
-  getInput() {
-    return this.refs.input.getDOMNode().value;
+  getInitialState() {
+    return{
+      theInput: ''
+    }
+  }
+  ,getInput() {
+    return this.state.theInput;
   },
+  handleChange (e) {
+    this.setState({
+      theInput: e.target.value
+    })
+  },
+  handleKeyDown(e) {
+    if(e.which == 13){
+      e.preventDefault();
+      if(this.state.theInput.length > 0) {
+        var passingMessage = {
+          username: this.state.theInput,
+          socket: socket
+        }
+        new SignInAction(passingMessage).exec();
+      }
+    }
+
+  },
+
   render: function() {
     return (
       <div style={css.usernameKeyboardInputWrap}>
         <div style={css.usernameLabel}>username:</div>
-        <textarea ref="input" style={css.usernameInput} placeholder="Guanjun.."/>
+        <textarea ref="input" onChange={this.handleChange} onKeyDown={this.handleKeyDown} style={css.usernameInput} placeholder="Guanjun.."/>
       </div>
     );
   }
@@ -309,12 +334,32 @@ const ChatroomKeyboardInput = React.createClass({
       theInput: e.target.value
     })
   },
+  handleKeyDown(e) {
+    if(e.which == 13){
+      e.preventDefault();
+      if(this.state.theInput.length > 0){
+        var message = {
+          user : ChatStore.username,
+          text : this.state.theInput
+        };
+        var passingMessage = {
+          message: message,
+          socket: socket
+        }
+        new SendMessageAction(passingMessage).exec();
+      }
+      this.setState({
+        theInput: ''
+      })
+    }
+
+  },
   render: function() {
     return (
       <div style={css.chatroomKeyboardInputWrap}>
 
         <textarea ref="messageInput" style={m(css.chatroomKeyboardInput
-        )} onChange={this.handleChange} value={this.state.theInput}
+        )} onChange={this.handleChange} onKeyDown={this.handleKeyDown} value={this.state.theInput}
          placeholder="Please send a message.."/>
       </div>
     );
