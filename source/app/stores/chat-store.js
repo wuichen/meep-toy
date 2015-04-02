@@ -1,5 +1,7 @@
 import StoreBase from 'meepworks/store-base';
 import SignInAction from '../actions/sign-in-action';
+import SendMessageAction from '../actions/send-message-action';
+import ReceiveMessageAction from '../actions/receive-message-action';
 import Im from 'immutable';
 
 const DATA = Symbol();
@@ -7,32 +9,46 @@ const DATA = Symbol();
 class ChatStore extends StoreBase {
 
   constructor() {
-    this[DATA] = Im.fromJS({
+    this[DATA] = {
       signedIn: false,
-      username: 'Guest'
-    });
+      username: 'Guest',
+      users: [],
+      messages: []
+    }; 
   }
 
   dehydrate() {
-    return this[DATA].toJS();
+    return this[DATA];
   }
 
   rehydrate(state) {
-    this[DATA] = Im.fromJS(state);
+    this[DATA] = state;
   }
 
   get handlers() {
     return [{
       action: SignInAction,
       handler: this.handleSignInAction
+    },{
+      action: SendMessageAction,
+      handler: this.handleMessageAction
+    },{
+      action: ReceiveMessageAction,
+      handler: this.handleMessageAction
     }]
   }
 
-  handleSignInAction(payload) {
-    this[DATA] = this[DATA].set('username', payload);
-    this[DATA] = this[DATA].set('signedIn', true);
-    console.log('---about to emit change event!---');
+  handleMessageAction(message){
+    this.messages.push(message);
     this.emit('change');
+  }
+
+  handleSignInAction(username) {
+
+    this[DATA].username = username;
+    this[DATA].signedIn = true;
+    this.emit('change');
+
   }
 
   static get isSignedIn() {
@@ -40,7 +56,7 @@ class ChatStore extends StoreBase {
   }
 
   get isSignedIn() {
-    return this[DATA].get('signedIn');
+    return this[DATA].signedIn;
   }
 
   static get username() {
@@ -48,7 +64,23 @@ class ChatStore extends StoreBase {
   }
 
   get username() {
-    return this[DATA].get('username');
+    return this[DATA].username;
+  }
+
+  static get messages() {
+    return this.getInstance().messages;
+  }
+
+  get messages() {
+    return this[DATA].messages;
+  }
+
+  static get users() {
+    return this.getInstance().users;
+  }
+
+  get users() {
+    return this[DATA].users;
   }
 
 }

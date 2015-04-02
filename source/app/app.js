@@ -5,6 +5,9 @@ import 'font-awesome/css/font-awesome.min.css!';
 // import Sidebar from './lib/sidebar';
 // import Meeptv Vfrom './lib/meeptv';
 import RouterStore from 'meepworks/stores/router-store';
+import { PlayerStore } from './lib/livestream';
+import Meeptv from './lib/meeptv';
+
 // import ChatStore from './stores/chat-store'
 
 const App = React.createClass({
@@ -20,6 +23,9 @@ const App = React.createClass({
 
 export default {
   component: App,
+  stores: [
+    PlayerStore
+  ],
   routes: {
     '/': {
       name: 'home',

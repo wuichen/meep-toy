@@ -1,4 +1,23 @@
 const css = {
+  currentVideo: {
+    position:'absolute',
+    top:0,
+    left:-1,
+    width:'100%', 
+    height:'100%',
+    // max-height: '90%',
+    // min-width: '400px'
+  },
+  currentVideoWrapper: {
+    position:'relative'
+  },
+  currentVideoPlaceHolder: {
+    display:'block',
+    width:'100%',
+    height:'auto',
+    // max-height: '90%',
+    // min-width: '400px'
+  },
   meeptv: {
     display: 'flex',
     height: '100%'
