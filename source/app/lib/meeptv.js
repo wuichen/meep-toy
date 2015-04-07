@@ -36,6 +36,18 @@ const Chatroom = React.createClass({
 
   componentDidMount() {
     ChatStore.subscribe(this.handleChange);
+    if(localStorage.getItem("username")) {
+      var existedUser = localStorage.getItem("username");
+      var passingMessage = {
+        username: existedUser,
+        socket: socket,
+        existed: true
+      }
+
+      new SignInAction(passingMessage).exec();
+      console.log(existedUser);
+    }
+    
 
   },
   handleKeyboardClick(e) {
@@ -51,9 +63,14 @@ const Chatroom = React.createClass({
   },
 
   handleChange() {
-    this.setState({
-      signedIn: ChatStore.isSignedIn
-    });
+    if(ChatStore.isSignedIn){
+      this.setState({
+        signedIn: ChatStore.isSignedIn,
+        displayLogIn: false
+      });
+      console.log(this.state.signedIn);
+      console.log(this.state.displayLogIn);
+    }
   },
 
   componentWillUnmount() {
@@ -138,7 +155,7 @@ const ChatroomBody = React.createClass({
   },
   userJoined(data) {
     var message = {
-      user: 'APPLICATION BOT',
+      user: '',
       text: data.name + ' joined'
     }   
     new ReceiveMessageAction(message).exec();
@@ -149,7 +166,7 @@ const ChatroomBody = React.createClass({
 
   userLeft(data){
     var message = {
-      user: 'APPLICATION BOT',
+      user: '',
       text: data.name + ' left'
     }   
     new ReceiveMessageAction(message).exec();
@@ -177,7 +194,7 @@ const ChatroomBody = React.createClass({
           console.log(message);
           console.log(i);
           
-            if(message.user == "APPLICATION BOT"){
+            if(message.user == ""){
               return <p>{message.text}</p>
             }else{
               return <ChatroomBodyMessage avatarSrc="http://goo.gl/ZEqz3T" name={message.user} text={message.text}/>
@@ -260,7 +277,8 @@ const UsernameKeyboard = React.createClass({
     if(this.refs.input.getInput().length > 0) {
       var passingMessage = {
         username: this.refs.input.getInput(),
-        socket: socket
+        socket: socket,
+        existed: false
       }
       new SignInAction(passingMessage).exec();
     }

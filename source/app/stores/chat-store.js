@@ -44,7 +44,7 @@ class ChatStore extends StoreBase {
   }
 
   handleSignInAction(username) {
-
+    this.messages.push({user:'',text:'You have entered the chat as '+ username});
     this[DATA].username = username;
     this[DATA].signedIn = true;
     this.emit('change');
